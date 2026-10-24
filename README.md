@@ -35,7 +35,7 @@ Your job in every phase is to steer and verify, not to write code.
 - [Default] Give the agent the latest spec version, not the history of edits. Keep history for yourself.
 
 **Don't**
-- Don't ask the agent to plan and code in the same prompt. Planning first and building from the written plan in a separate step consistently produces better results than one combined prompt (see Anthropic's workflow guidance: https://www.anthropic.com/research/claude-code-best-practices).
+- Don't ask the agent to plan and code in the same prompt. Anthropic's published workflow guidance recommends separating exploration, planning, and implementation into distinct steps (https://www.anthropic.com/research/claude-code-best-practices).
 - Don't skip the spec for "small" changes that touch more than one file or behavior.
 
 ---
@@ -151,7 +151,7 @@ For each page or feature, write the interaction spec: what each control does, an
 
 ## 5. Acceptance criteria: how we know it is right
 
-Every requirement needs a check you can actually run. In controlled studies, giving a model concrete test cases alongside the task measurably improved the correctness of its output (for example Mathews and Nagappan, ASE 2024, reported in the spec survey at https://specroot.io/notes/how-to-write-a-spec-for-ai-agents/). This is one of the most reliable levers you have.
+Every requirement needs a check you can actually run. One controlled study found that including test cases with the task improved the correctness of generated code (Mathews and Nagappan, ASE 2024, as reported in the spec survey at https://specroot.io/notes/how-to-write-a-spec-for-ai-agents/). Whatever the size of the effect, concrete pass/fail cases give you and the agent a shared definition of done.
 
 **Format: Given / When / Then**
 
@@ -170,7 +170,7 @@ Given/When/Then comes from Gherkin, a standard plain-text format for describing 
 - [Default] Add one end-to-end check that proves the whole feature works, not just the pieces.
 
 **Don't**
-- Don't write criteria the agent cannot check itself.
+- Don't assume every criterion can be machine-checked. Some checks need a human: visual review, testing on the actual device, accessibility checks. For those, write down who performs the check and what evidence counts (for example: a screenshot from the target device at 360px width).
 - Don't accept "done" without running the criteria. Review the output against the list, every time.
 
 ---
@@ -193,7 +193,7 @@ Given/When/Then comes from Gherkin, a standard plain-text format for describing 
 
 ## 7. Privacy and security
 
-Security requirements left out of the spec are often left out of the generated code: studies of agent-generated code repeatedly find functional requirements implemented while unstated security expectations are missed (see the large-scale analyses at https://arxiv.org/abs/2510.26103 and https://arxiv.org/abs/2404.18353). Write the security lines down.
+Write the security requirements down; do not assume the agent adds security on its own. Large-scale analyses of AI-generated code in public repositories keep finding real vulnerabilities (https://arxiv.org/abs/2510.26103 and https://arxiv.org/abs/2404.18353).
 
 **For any app** [Requirement]
 
@@ -226,9 +226,9 @@ Write these into the design system once so every page inherits them. The referen
 **Do**
 - [Requirement] Keyboard: everything usable without a mouse. Visible focus indicator on the focused element; focus order follows the visual order; no keyboard traps.
 - [Requirement] Semantic controls: real buttons, links, and form fields, not clickable divs. Every input gets a label; every icon-only button gets an accessible name.
-- [Requirement] Touch targets: WCAG 2.2 requires at least 24 x 24 CSS px as a minimum (with exceptions, for example targets inline within text, browser-controlled elements, or cases where a 24px spacing circle around each target does not overlap another: https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html). 44 x 44 px is the widely used comfortable size for primary controls on phones (it is the stricter WCAG Level AAA size and matches Apple and Android platform guidance).
+- [Requirement] Touch targets: WCAG 2.2 requires at least 24 x 24 CSS px as a minimum, with documented exceptions (for example targets inline within text, browser-controlled elements, or cases where a 24px spacing circle around each target does not overlap another: https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html). WCAG's stricter Level AAA guideline is 44 x 44 CSS px, a good size to choose for primary controls on phones. Note that CSS px, points, and Android dp are different units; if you build native apps, check each platform's own guidelines.
 - [Requirement] Text contrast: at least 4.5:1 for body text against its background.
-- [Default] Text scales: support 200% browser zoom and text resizing without loss of content, and no horizontal scrolling for reading content at 320px width (WCAG reflow).
+- [Requirement] Text scales, when you target WCAG Level AA: text must resize to 200% without loss of content or functionality (criterion 1.4.4, with exceptions such as captions and images of text), and content must reflow at 320 CSS px width without horizontal scrolling for reading (criterion 1.4.10, with exceptions for content that needs two-dimensional layout, such as maps or data tables). Meeting these two criteria is part of AA conformance, not a complete accessibility guarantee by itself.
 - [Default] Respect reduced motion: honor the user's prefers-reduced-motion setting; no essential information conveyed only by animation.
 - [Requirement] Every component covers its states: default, hover, focus, disabled, loading, error.
 - [Requirement] Test on the actual target device, not only a resized desktop browser.
@@ -337,7 +337,7 @@ Copy these into a project repo and fill in the brackets.
 - List row: [height, content order, truncation]
 
 ## Accessibility
-- Touch targets: 44x44px for primary actions; never below 24x24px
+- Touch targets: project default is 44x44px for primary actions; we treat 24x24px as our floor even where WCAG allows smaller exceptions
 - Contrast: at least 4.5:1 for text
 - Keyboard: full operability, visible focus
 - Zoom/reflow: usable at 200% zoom and 320px width
